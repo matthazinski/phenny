@@ -1,21 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
-lastfmn.py - lastfm module
+lastfm.py - lastfm module
 author: Casey Link <unnamedrambler@gmail.com>
 """
 
 import random
-
-import configparser, os
-import http.client
-from urllib.parse import quote as urlquote
-from urllib.request import urlopen
-from urllib.error import HTTPError
+import configparser
+import os
+import web
 from lxml import etree
 from datetime import datetime
 
-APIKEY = "b25b959554ed76058ac220b7b2e0a026"
+APIKEY = "f8f2a50033d7385e547fccbae92b2138"
 APIURL = "http://ws.audioscrobbler.com/2.0/?api_key="+APIKEY+"&"
 AEPURL = "http://www.davethemoonman.com/lastfm/aep.php?format=txt&username="
 
@@ -85,25 +82,21 @@ def now_playing(phenny, input):
             user = arg
     user = user.strip()
     try:
-        req = urlopen("%smethod=user.getrecenttracks&user=%s" % (APIURL, urlquote(user)))
-    except HTTPError as e:
-        if e.code == 400:
+        req = web.get("%smethod=user.getrecenttracks&user=%s" % (APIURL, web.quote(user)))
+    except web.HTTPError as e:
+        if e.response.status_code == 400:
             phenny.say("%s doesn't exist on last.fm, perhaps they need to set user" % (user))
             return
         else:
             phenny.say("uhoh. try again later, mmkay?")
             return
-    except http.client.BadStatusLine:
-        phenny.say("uhoh. try again later, mmkay?")
-        return
-    doc = etree.parse(req)
-    root = doc.getroot()
+    root = etree.fromstring(req.encode('utf-8'))
     recenttracks = list(root)
     if len(recenttracks) == 0:
         phenny.say("%s hasn't played anything recently. this isn't you? try lastfm-set" % (user))
         return
     tracks = list(recenttracks[0])
-    #print etree.tostring(recenttracks[0])
+    #print(etree.tostring(recenttracks[0]))
     if len(tracks) == 0:
         phenny.say("%s hasn't played anything recently. this isn't you? try lastfm-set" % (user))
         return
@@ -114,6 +107,7 @@ def now_playing(phenny, input):
         tags[e.tag] = e
 
     track = tags['name'].text.strip()
+
     artist = tags['artist'].text.strip()
 
     album = "unknown"
@@ -154,16 +148,15 @@ def tasteometer(phenny, input):
         if not user2:
             user2 = input.nick
     try:
-        req = urlopen("%smethod=tasteometer.compare&type1=user&type2=user&value1=%s&value2=%s" % (APIURL, urlquote(user1), urlquote(user2)))
-    except (HTTPError, http.client.BadStatusLine) as e:
-        if e.code == 400:
+        req = web.get("%smethod=tasteometer.compare&type1=user&type2=user&value1=%s&value2=%s" % (APIURL, web.quote(user1), web.quote(user2)))
+    except web.HTTPError as e:
+        if e.response.status_code == 400:
             phenny.say("uhoh, someone doesn't exist on last.fm, perhaps they need to set user")
             return
         else:
             phenny.say("uhoh. try again later, mmkay?")
             return
-    doc = etree.parse(req)
-    root = doc.getroot()
+    root = etree.fromstring(req.encode('utf-8'))
     score = root.xpath('comparison/result/score')
     if len(score) == 0:
         phenny.say("something isn't right. have those users scrobbled?")

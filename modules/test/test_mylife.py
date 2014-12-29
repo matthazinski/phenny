@@ -24,15 +24,10 @@ class TestMylife(unittest.TestCase):
         mylife.mlib(self.phenny, None)
         assert self.phenny.say.called is True
 
-    def test_mlih(self):
-        mylife.mlih(self.phenny, None)
+    def test_mlig(self):
+        mylife.mlib(self.phenny, None)
         assert self.phenny.say.called is True
 
     def test_mlihp(self):
         mylife.mlihp(self.phenny, None)
         assert self.phenny.say.called is True
-
-    def test_mlit(self):
-        mylife.mlit(self.phenny, None)
-        assert self.phenny.say.called is True
-

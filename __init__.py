@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 __init__.py - Phenny Init Module
 Copyright 2008, Sean B. Palmer, inamidst.com
@@ -39,7 +39,8 @@ def run_phenny(config):
     def connect(config): 
         import bot
         p = bot.Phenny(config)
-        p.run(config.host, config.port, config.ssl, config.ipv6)
+        p.run(config.host, config.port, config.ssl, config.ipv6,
+              config.ca_certs)
 
     try: Watcher()
     except Exception as e:

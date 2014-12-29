@@ -11,7 +11,7 @@ from modules.lastfm import now_playing, tasteometer
 
 class TestLastfm(unittest.TestCase):
     user1 = 'test'
-    user2 = 'ackthet'
+    user2 = 'telnoratti'
 
     def setUp(self):
         self.phenny = MagicMock()
@@ -21,7 +21,7 @@ class TestLastfm(unittest.TestCase):
         now_playing(self.phenny, input)
 
         out = self.phenny.say.call_args[0][0]
-        m = re.match('^{0} .*$'.format(self.user1), out, flags=re.UNICODE)
+        m = re.match('^{0} listened to ".+" by .+ on .+ .*$'.format(self.user1), out, flags=re.UNICODE)
         self.assertTrue(m)
 
     def test_now_playing_sender(self):
@@ -30,7 +30,7 @@ class TestLastfm(unittest.TestCase):
         now_playing(self.phenny, input)
 
         out = self.phenny.say.call_args[0][0]
-        m = re.match('^{0} .*$'.format(self.user1), out, flags=re.UNICODE)
+        m = re.match('^{0} listened to ".+" by .+ on .+ .*$'.format(self.user1), out, flags=re.UNICODE)
         self.assertTrue(m)
 
     def test_tasteometer(self):
@@ -45,7 +45,7 @@ class TestLastfm(unittest.TestCase):
 
         out = self.phenny.say.call_args[0][0]
         m = re.match("^{0}'s and {1}'s musical compatibility rating is .*"\
-                " and music they have in common includes: .*$".
+                " they don't have any artists in common.$".
                 format(self.user1, self.user2), out, flags=re.UNICODE)
         self.assertTrue(m)
 
@@ -62,6 +62,6 @@ class TestLastfm(unittest.TestCase):
 
         out = self.phenny.say.call_args[0][0]
         m = re.match("^{0}'s and {1}'s musical compatibility rating is .*"\
-                " and music they have in common includes: .*$".
+                " they don't have any artists in common.$".
                 format(self.user1, self.user2), out, flags=re.UNICODE)
         self.assertTrue(m)
